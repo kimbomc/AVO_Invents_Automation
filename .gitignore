@@ -1,0 +1,12 @@
+# Build artifacts
+*.exe
+*.obj
+*.pdb
+*.ilk
+
+# VS Code
+.vscode/settings.json
+
+# Archive and logs
+InputPanelsArchive/
+Logs/
