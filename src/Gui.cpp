@@ -11,6 +11,16 @@
 #define ID_BTN_OPEN_FOLDER       1002
 #define ID_BTN_MARK_LASERED      1003
 
+// Panel layout constants
+static const int PANEL_ORIGIN_X = 20;
+static const int PANEL_ORIGIN_Y = 200;
+static const int PANEL_COLS     = 6;
+static const int PANEL_ROWS     = 4;
+static const int SLOT_WIDTH     = 120;
+static const int SLOT_HEIGHT    = 60;
+static const int SLOT_H_GAP     = 10;
+static const int SLOT_V_GAP     = 10;
+
 // Global panel data to display
 static Panel g_panel;
 
@@ -78,6 +88,33 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         text = "Created At: " + g_panel.createdAt;
         TextOutA(hdc, 20, y, text.c_str(), (int)text.length());
         
+        // Draw 24 PCB slots in a 6x4 grid
+        HPEN hPen = CreatePen(PS_SOLID, 2, RGB(100, 100, 100));
+        HPEN hOldPen = (HPEN)SelectObject(hdc, hPen);
+        
+        for (int i = 0; i < 24; ++i) {
+            int row = i / PANEL_COLS;
+            int col = i % PANEL_COLS;
+            
+            int left   = PANEL_ORIGIN_X + col * (SLOT_WIDTH + SLOT_H_GAP);
+            int top    = PANEL_ORIGIN_Y + row * (SLOT_HEIGHT + SLOT_V_GAP);
+            int right  = left + SLOT_WIDTH;
+            int bottom = top + SLOT_HEIGHT;
+            
+            // Draw rectangle for PCB slot
+            Rectangle(hdc, left, top, right, bottom);
+            
+            // Draw PCB label and short serial
+            std::string pcbLabel = "PCB" + std::to_string(i + 1);
+            std::string shortSerial = g_panel.pcbSerials[i].substr(0, 8);
+            std::string slotText = pcbLabel + ": " + shortSerial;
+            
+            TextOutA(hdc, left + 4, top + 4, slotText.c_str(), (int)slotText.length());
+        }
+        
+        SelectObject(hdc, hOldPen);
+        DeleteObject(hPen);
+        
         SelectObject(hdc, hOldFont);
         DeleteObject(hFont);
         EndPaint(hwnd, &ps);
@@ -136,7 +173,7 @@ void runPanelViewerGui(const Panel& panel) {
         "BUTTON",
         "Generate Barcode",
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
-        30, 220, 200, 35,
+        30, 510, 200, 35,
         hwnd,
         (HMENU)ID_BTN_GENERATE_BARCODE,
         hInstance,
@@ -147,7 +184,7 @@ void runPanelViewerGui(const Panel& panel) {
         "BUTTON",
         "Open Panel Folder",
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
-        250, 220, 200, 35,
+        250, 510, 200, 35,
         hwnd,
         (HMENU)ID_BTN_OPEN_FOLDER,
         hInstance,
@@ -158,7 +195,7 @@ void runPanelViewerGui(const Panel& panel) {
         "BUTTON",
         "Mark As Lasered",
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
-        470, 220, 200, 35,
+        470, 510, 200, 35,
         hwnd,
         (HMENU)ID_BTN_MARK_LASERED,
         hInstance,
