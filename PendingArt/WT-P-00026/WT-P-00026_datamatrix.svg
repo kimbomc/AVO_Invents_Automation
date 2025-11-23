@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="220" height="260" xmlns="http://www.w3.org/2000/svg">
+  <!-- Placeholder DataMatrix Label -->
+  <rect width="220" height="260" fill="white"/>
+  <rect x="40" y="30" width="12" height="12" fill="black"/>
+  <rect x="52" y="30" width="12" height="12" fill="black"/>
+  <rect x="64" y="30" width="12" height="12" fill="black"/>
+  <rect x="76" y="30" width="12" height="12" fill="black"/>
+  <rect x="88" y="30" width="12" height="12" fill="black"/>
+  <rect x="100" y="30" width="12" height="12" fill="black"/>
+  <rect x="112" y="30" width="12" height="12" fill="black"/>
+  <rect x="124" y="30" width="12" height="12" fill="black"/>
+  <rect x="136" y="30" width="12" height="12" fill="black"/>
+  <rect x="148" y="30" width="12" height="12" fill="black"/>
+  <rect x="40" y="42" width="12" height="12" fill="black"/>
+  <rect x="52" y="42" width="12" height="12" fill="black"/>
+  <rect x="76" y="42" width="12" height="12" fill="black"/>
+  <rect x="100" y="42" width="12" height="12" fill="black"/>
+  <rect x="124" y="42" width="12" height="12" fill="black"/>
+  <rect x="148" y="42" width="12" height="12" fill="black"/>
+  <rect x="40" y="54" width="12" height="12" fill="black"/>
+  <rect x="64" y="54" width="12" height="12" fill="black"/>
+  <rect x="88" y="54" width="12" height="12" fill="black"/>
+  <rect x="112" y="54" width="12" height="12" fill="black"/>
+  <rect x="136" y="54" width="12" height="12" fill="black"/>
+  <rect x="148" y="54" width="12" height="12" fill="black"/>
+  <rect x="40" y="66" width="12" height="12" fill="black"/>
+  <rect x="52" y="66" width="12" height="12" fill="black"/>
+  <rect x="76" y="66" width="12" height="12" fill="black"/>
+  <rect x="100" y="66" width="12" height="12" fill="black"/>
+  <rect x="124" y="66" width="12" height="12" fill="black"/>
+  <rect x="148" y="66" width="12" height="12" fill="black"/>
+  <rect x="40" y="78" width="12" height="12" fill="black"/>
+  <rect x="64" y="78" width="12" height="12" fill="black"/>
+  <rect x="88" y="78" width="12" height="12" fill="black"/>
+  <rect x="112" y="78" width="12" height="12" fill="black"/>
+  <rect x="136" y="78" width="12" height="12" fill="black"/>
+  <rect x="148" y="78" width="12" height="12" fill="black"/>
+  <rect x="40" y="90" width="12" height="12" fill="black"/>
+  <rect x="52" y="90" width="12" height="12" fill="black"/>
+  <rect x="76" y="90" width="12" height="12" fill="black"/>
+  <rect x="100" y="90" width="12" height="12" fill="black"/>
+  <rect x="124" y="90" width="12" height="12" fill="black"/>
+  <rect x="148" y="90" width="12" height="12" fill="black"/>
+  <rect x="40" y="102" width="12" height="12" fill="black"/>
+  <rect x="64" y="102" width="12" height="12" fill="black"/>
+  <rect x="88" y="102" width="12" height="12" fill="black"/>
+  <rect x="112" y="102" width="12" height="12" fill="black"/>
+  <rect x="136" y="102" width="12" height="12" fill="black"/>
+  <rect x="148" y="102" width="12" height="12" fill="black"/>
+  <rect x="40" y="114" width="12" height="12" fill="black"/>
+  <rect x="52" y="114" width="12" height="12" fill="black"/>
+  <rect x="76" y="114" width="12" height="12" fill="black"/>
+  <rect x="100" y="114" width="12" height="12" fill="black"/>
+  <rect x="124" y="114" width="12" height="12" fill="black"/>
+  <rect x="148" y="114" width="12" height="12" fill="black"/>
+  <rect x="40" y="126" width="12" height="12" fill="black"/>
+  <rect x="64" y="126" width="12" height="12" fill="black"/>
+  <rect x="88" y="126" width="12" height="12" fill="black"/>
+  <rect x="112" y="126" width="12" height="12" fill="black"/>
+  <rect x="136" y="126" width="12" height="12" fill="black"/>
+  <rect x="148" y="126" width="12" height="12" fill="black"/>
+  <rect x="40" y="138" width="12" height="12" fill="black"/>
+  <rect x="52" y="138" width="12" height="12" fill="black"/>
+  <rect x="64" y="138" width="12" height="12" fill="black"/>
+  <rect x="76" y="138" width="12" height="12" fill="black"/>
+  <rect x="88" y="138" width="12" height="12" fill="black"/>
+  <rect x="100" y="138" width="12" height="12" fill="black"/>
+  <rect x="112" y="138" width="12" height="12" fill="black"/>
+  <rect x="124" y="138" width="12" height="12" fill="black"/>
+  <rect x="136" y="138" width="12" height="12" fill="black"/>
+  <rect x="148" y="138" width="12" height="12" fill="black"/>
+  <rect x="35" y="25" width="130" height="130" fill="none" stroke="black" stroke-width="2"/>
+  <text x="110" y="190" font-family="Arial" font-size="16" font-weight="bold" text-anchor="middle" fill="black">WT-P-00026</text>
+  <text x="110" y="215" font-family="Arial" font-size="14" text-anchor="middle" fill="black">Operator: christopher</text>
+</svg>

@@ -1,96 +1,177 @@
-#include <iostream>
-#include <fstream>
 #include <string>
 #include <sstream>
 #include <vector>
+#include <windows.h>
+#include <commctrl.h>
 #include "Panel.h"
 #include "MasterData.h"
 #include "Gui.h"
+#include "SessionState.h"
 
-int main() {
-    std::cout << "AVO Invents Automation test build OK\n";
+// Force Windows subsystem to prevent console window
+#pragma comment(linker, "/SUBSYSTEM:WINDOWS")
 
-    // Path to the test file
-    std::string csvPath = "InputPanels/panel_test.csv";
+// Global variables for the operator name dialog
+static char g_operatorNameBuffer[256] = "";
+static HWND g_hEditOperatorName = NULL;
+static HWND g_hDialogWindow = NULL;
+static bool g_dialogClosed = false;
 
-    std::ifstream file(csvPath);
-    if (!file.is_open()) {
-        std::cout << "ERROR: Could not open " << csvPath << "\n";
-        return 1;
+// Window procedure for the operator name dialog
+LRESULT CALLBACK OperatorDialogWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+    switch (uMsg) {
+    case WM_CREATE: {
+        // Create static text label
+        HWND hLabel = CreateWindowExA(
+            0,
+            "STATIC",
+            "Please enter your name:",
+            WS_CHILD | WS_VISIBLE | SS_LEFT,
+            20, 20, 360, 20,
+            hwnd,
+            NULL,
+            GetModuleHandle(NULL),
+            NULL
+        );
+        
+        // Create the edit control
+        g_hEditOperatorName = CreateWindowExA(
+            WS_EX_CLIENTEDGE,
+            "EDIT",
+            "",
+            WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
+            20, 50, 360, 30,
+            hwnd,
+            (HMENU)101,
+            GetModuleHandle(NULL),
+            NULL
+        );
+        
+        // Create OK button
+        HWND hButton = CreateWindowExA(
+            0,
+            "BUTTON",
+            "OK",
+            WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
+            160, 95, 100, 35,
+            hwnd,
+            (HMENU)IDOK,
+            GetModuleHandle(NULL),
+            NULL
+        );
+        
+        // Set font for all controls
+        HFONT hFont = CreateFont(18, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+            DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+            CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Segoe UI"));
+        
+        SendMessage(hLabel, WM_SETFONT, (WPARAM)hFont, TRUE);
+        SendMessage(g_hEditOperatorName, WM_SETFONT, (WPARAM)hFont, TRUE);
+        SendMessage(hButton, WM_SETFONT, (WPARAM)hFont, TRUE);
+        
+        SetFocus(g_hEditOperatorName);
+        return 0;
     }
-
-    // Read header row
-    std::string header;
-    if (!std::getline(file, header)) {
-        std::cout << "ERROR: File is empty.\n";
-        return 1;
-    }
-
-    std::cout << "Header row: " << header << "\n";
-
-    // Read data row (the single panel row)
-    std::string dataLine;
-    if (!std::getline(file, dataLine)) {
-        std::cout << "ERROR: No data row found after header.\n";
-        return 1;
-    }
-
-    // Split the data row by tab (your file uses tab separators)
-    std::vector<std::string> fields;
-    {
-        std::stringstream ss(dataLine);
-        std::string field;
-        while (std::getline(ss, field, '\t')) {
-            // Trim possible leading/trailing spaces
-            while (!field.empty() && (field.back() == '\r' || field.back() == ' ')) {
-                field.pop_back();
+        
+    case WM_COMMAND: {
+        if (LOWORD(wParam) == IDOK) {
+            // Get the text from the edit control
+            GetWindowTextA(g_hEditOperatorName, g_operatorNameBuffer, 256);
+            
+            // Validate that name is not empty
+            if (strlen(g_operatorNameBuffer) == 0) {
+                MessageBoxA(hwnd, "Please enter your name.", "Error", MB_OK | MB_ICONERROR);
+                SetFocus(g_hEditOperatorName);
+                return 0;
             }
-            while (!field.empty() && field.front() == ' ') {
-                field.erase(field.begin());
-            }
-            fields.push_back(field);
+            
+            g_dialogClosed = true;
+            DestroyWindow(hwnd);
+            return 0;
+        }
+        break;
+    }
+        
+    case WM_CLOSE: {
+        // Don't allow closing without entering a name
+        MessageBoxA(hwnd, "You must enter an operator name to continue.", "Required", MB_OK | MB_ICONWARNING);
+        return 0;
+    }
+    
+    case WM_DESTROY: {
+        g_hDialogWindow = NULL;
+        PostQuitMessage(0);
+        return 0;
+    }
+    }
+    return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+void showOperatorNameDialog() {
+    g_dialogClosed = false;
+    
+    // Register window class for the dialog
+    WNDCLASSEX wc = {};
+    wc.cbSize = sizeof(WNDCLASSEX);
+    wc.lpfnWndProc = OperatorDialogWindowProc;
+    wc.hInstance = GetModuleHandle(NULL);
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wc.lpszClassName = TEXT("OperatorNameDialog");
+    RegisterClassEx(&wc);
+    
+    // Create the dialog window
+    g_hDialogWindow = CreateWindowExA(
+        WS_EX_DLGMODALFRAME | WS_EX_TOPMOST,
+        "OperatorNameDialog",
+        "AVO Invents - Enter Operator Name",
+        WS_POPUP | WS_CAPTION | WS_SYSMENU,
+        0, 0, 420, 180,
+        NULL,
+        NULL,
+        GetModuleHandle(NULL),
+        NULL
+    );
+    
+    if (g_hDialogWindow) {
+        // Center and show the dialog
+        RECT rc;
+        GetWindowRect(g_hDialogWindow, &rc);
+        int xPos = (GetSystemMetrics(SM_CXSCREEN) - (rc.right - rc.left)) / 2;
+        int yPos = (GetSystemMetrics(SM_CYSCREEN) - (rc.bottom - rc.top)) / 2;
+        SetWindowPos(g_hDialogWindow, HWND_TOPMOST, xPos, yPos, 0, 0, SWP_NOSIZE);
+        
+        ShowWindow(g_hDialogWindow, SW_SHOW);
+        UpdateWindow(g_hDialogWindow);
+        
+        // Message loop for the dialog
+        MSG msg;
+        while (GetMessage(&msg, NULL, 0, 0)) {
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
         }
     }
+    
+    g_currentOperator = std::string(g_operatorNameBuffer);
+}
 
-    if (fields.size() < 25) { // 1 for PanelNumber + 24 PCB serials
-        std::cout << "ERROR: Expected at least 25 fields (PanelNumber + 24 PCB serials), got "
-                  << fields.size() << "\n";
-        return 1;
-    }
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+    // Explicitly free any console that might have been allocated
+    FreeConsole();
+    
+    // Show GUI dialog for operator name
+    showOperatorNameDialog();
 
-    // Fill a Panel object from the fields
+    // Initialize empty panel
     Panel p;
-    p.panelID = generateNextPanelID();
-    p.panelNumber = fields[0];    // first column is PanelNumber
-    for (size_t i = 0; i < 24; ++i) {
-        p.pcbSerials[i] = fields[i + 1]; // PCB1..PCB24
-    }
+    p.panelID = "";
+    p.panelNumber = "";
     p.status = PanelStatus::Detected;
     p.createdAt = "";
     p.laseredAt = "";
-    p.sourceFile = csvPath;
+    p.sourceFile = "";
 
-    // Close the input file before moving it
-    file.close();
-
-    // Print a small summary to prove parsing worked
-    std::cout << "Parsed panel:\n";
-    std::cout << "  PanelID:    " << p.panelID << "\n";
-    std::cout << "  PanelNumber:" << p.panelNumber << "\n";
-    std::cout << "  PCB1:       " << p.pcbSerials[0] << "\n";
-    std::cout << "  PCB24:      " << p.pcbSerials[23] << "\n";
-    std::cout << "  Status:     " << panelStatusToString(p.status) << "\n";
-
-
-    // Save to master CSV
-    appendPanelToMaster(p);
-    std::cout << "Panel appended to master CSV.\n";
-
-    moveInputPanelToArchive(csvPath);
-    std::cout << "Input panel moved to archive.\n";
-
-    std::cout << "DEBUG: End of main reached\n";
-
+    // Show GUI with no panel loaded
     runPanelViewerGui(p);
 
     return 0;

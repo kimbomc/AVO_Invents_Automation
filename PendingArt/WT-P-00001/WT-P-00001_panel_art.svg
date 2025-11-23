@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="550" xmlns="http://www.w3.org/2000/svg">
+  <!-- AVO Invents Ltd - WolfTrack Panel Artwork -->
+  <rect width="800" height="550" fill="white"/>
+  <text x="20" y="30" font-family="Arial" font-size="18" font-weight="bold" fill="black">Panel ID: WT-P-00001</text>
+  <text x="20" y="55" font-family="Arial" font-size="16" fill="black">Operator: tom</text>
+  <text x="20" y="75" font-family="Arial" font-size="14" fill="gray">Panel Number: 1</text>
+  <rect x="20" y="100" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="25" y="118" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB1</text>
+  <text x="25" y="138" font-family="Courier New" font-size="10" fill="black">ABC001</text>
+  <rect x="150" y="100" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="155" y="118" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB2</text>
+  <text x="155" y="138" font-family="Courier New" font-size="10" fill="black">ABC002</text>
+  <rect x="280" y="100" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="285" y="118" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB3</text>
+  <text x="285" y="138" font-family="Courier New" font-size="10" fill="black">ABC003</text>
+  <rect x="410" y="100" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="415" y="118" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB4</text>
+  <text x="415" y="138" font-family="Courier New" font-size="10" fill="black">ABC004</text>
+  <rect x="540" y="100" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="545" y="118" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB5</text>
+  <text x="545" y="138" font-family="Courier New" font-size="10" fill="black">ABC005</text>
+  <rect x="670" y="100" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="675" y="118" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB6</text>
+  <text x="675" y="138" font-family="Courier New" font-size="10" fill="black">ABC006</text>
+  <rect x="20" y="170" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="25" y="188" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB7</text>
+  <text x="25" y="208" font-family="Courier New" font-size="10" fill="black">ABC007</text>
+  <rect x="150" y="170" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="155" y="188" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB8</text>
+  <text x="155" y="208" font-family="Courier New" font-size="10" fill="black">ABC008</text>
+  <rect x="280" y="170" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="285" y="188" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB9</text>
+  <text x="285" y="208" font-family="Courier New" font-size="10" fill="black">ABC009</text>
+  <rect x="410" y="170" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="415" y="188" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB10</text>
+  <text x="415" y="208" font-family="Courier New" font-size="10" fill="black">ABC010</text>
+  <rect x="540" y="170" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="545" y="188" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB11</text>
+  <text x="545" y="208" font-family="Courier New" font-size="10" fill="black">ABC011</text>
+  <rect x="670" y="170" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="675" y="188" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB12</text>
+  <text x="675" y="208" font-family="Courier New" font-size="10" fill="black">ABC012</text>
+  <rect x="20" y="240" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="25" y="258" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB13</text>
+  <text x="25" y="278" font-family="Courier New" font-size="10" fill="black">ABC013</text>
+  <rect x="150" y="240" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="155" y="258" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB14</text>
+  <text x="155" y="278" font-family="Courier New" font-size="10" fill="black">ABC014</text>
+  <rect x="280" y="240" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="285" y="258" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB15</text>
+  <text x="285" y="278" font-family="Courier New" font-size="10" fill="black">ABC015</text>
+  <rect x="410" y="240" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="415" y="258" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB16</text>
+  <text x="415" y="278" font-family="Courier New" font-size="10" fill="black">ABC016</text>
+  <rect x="540" y="240" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="545" y="258" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB17</text>
+  <text x="545" y="278" font-family="Courier New" font-size="10" fill="black">ABC017</text>
+  <rect x="670" y="240" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="675" y="258" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB18</text>
+  <text x="675" y="278" font-family="Courier New" font-size="10" fill="black">ABC018</text>
+  <rect x="20" y="310" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="25" y="328" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB19</text>
+  <text x="25" y="348" font-family="Courier New" font-size="10" fill="black">ABC019</text>
+  <rect x="150" y="310" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="155" y="328" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB20</text>
+  <text x="155" y="348" font-family="Courier New" font-size="10" fill="black">ABC020</text>
+  <rect x="280" y="310" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="285" y="328" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB21</text>
+  <text x="285" y="348" font-family="Courier New" font-size="10" fill="black">ABC021</text>
+  <rect x="410" y="310" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="415" y="328" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB22</text>
+  <text x="415" y="348" font-family="Courier New" font-size="10" fill="black">ABC022</text>
+  <rect x="540" y="310" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="545" y="328" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB23</text>
+  <text x="545" y="348" font-family="Courier New" font-size="10" fill="black">ABC023</text>
+  <rect x="670" y="310" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
+  <text x="675" y="328" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB24</text>
+  <text x="675" y="348" font-family="Courier New" font-size="10" fill="black">ABC024</text>
+  <rect x="15" y="95" width="780" height="280" fill="none" stroke="blue" stroke-width="2"/>
+</svg>

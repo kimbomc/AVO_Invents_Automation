@@ -7,7 +7,7 @@
             "command": "cmd.exe",
             "args": [
                 "/c",
-                "\"\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat\" && cl.exe /EHsc /std:c++17 /Iinclude src\\main.cpp src\\Panel.cpp src\\MasterData.cpp src\\Station1UI.cpp src\\Station2UI.cpp src\\Gui.cpp /Fe:AVO_Invents_Automation.exe user32.lib gdi32.lib\""
+                "\"\"C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Auxiliary\\Build\\vcvars64.bat\" && cl.exe /EHsc /std:c++17 /Iinclude src\\main.cpp src\\Panel.cpp src\\MasterData.cpp src\\Station1UI.cpp src\\Station2UI.cpp src\\Gui.cpp src\\SessionState.cpp user32.lib gdi32.lib shell32.lib comctl32.lib comdlg32.lib /link /SUBSYSTEM:WINDOWS /Fe:AVO_Invents_Automation.exe\""
             ],
             "options": {
                 "cwd": "${workspaceFolder}",

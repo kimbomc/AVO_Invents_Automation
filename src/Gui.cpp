@@ -1,19 +1,44 @@
 #include "Gui.h"
+#include "MasterData.h"
+#include "Config.h"
+#include "SessionState.h"
 #include <windows.h>
+#include <commdlg.h>
 #include <string>
 #include <sstream>
 #include <commctrl.h>
+#include <filesystem>
 
 #pragma comment(lib, "comctl32.lib")
+#pragma comment(lib, "comdlg32.lib")
+
+namespace fs = std::filesystem;
+
+// Get the directory where the executable is located
+static std::string getExeDirectory() {
+    char buffer[MAX_PATH];
+    GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    std::string exePath(buffer);
+    size_t pos = exePath.find_last_of("\\/");
+    return (pos != std::string::npos) ? exePath.substr(0, pos) : ".";
+}
+
+// Get absolute path for a relative path from exe directory
+static std::string getAbsolutePath(const std::string& relativePath) {
+    static std::string exeDir = getExeDirectory();
+    fs::path absPath = fs::path(exeDir) / relativePath;
+    return absPath.string();
+}
 
 // Button control IDs
-#define ID_BTN_GENERATE_BARCODE  1001
-#define ID_BTN_OPEN_FOLDER       1002
-#define ID_BTN_MARK_LASERED      1003
+#define ID_BTN_LOAD_CSV          1001
+#define ID_BTN_GENERATE_BARCODE  1002
+#define ID_BTN_OPEN_FOLDER       1003
+#define ID_BTN_VIEW_HISTORY      1004
 
 // Panel layout constants
 static const int PANEL_ORIGIN_X = 20;
-static const int PANEL_ORIGIN_Y = 200;
+static const int PANEL_ORIGIN_Y = 250;
 static const int PANEL_COLS     = 6;
 static const int PANEL_ROWS     = 4;
 static const int SLOT_WIDTH     = 120;
@@ -30,15 +55,81 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
     case WM_COMMAND: {
         int controlId = LOWORD(wParam);
         switch (controlId) {
-        case ID_BTN_GENERATE_BARCODE:
-            MessageBoxA(hwnd, "Generate Barcode clicked", "WolfTrack", MB_OK);
+        case ID_BTN_LOAD_CSV: {
+            // Show file open dialog
+            OPENFILENAMEA ofn = {};
+            char szFile[260] = {0};
+            
+            ofn.lStructSize = sizeof(ofn);
+            ofn.hwndOwner = hwnd;
+            ofn.lpstrFile = szFile;
+            ofn.nMaxFile = sizeof(szFile);
+            ofn.lpstrFilter = "CSV Files\\0*.csv\\0All Files\\0*.*\\0";
+            ofn.nFilterIndex = 1;
+            ofn.lpstrFileTitle = NULL;
+            ofn.nMaxFileTitle = 0;
+            std::string inputPanelsDir = getAbsolutePath(WolfTrackConfig::INPUT_PANELS_ROOT);
+            ofn.lpstrInitialDir = inputPanelsDir.c_str();
+            ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+            
+            if (GetOpenFileNameA(&ofn)) {
+                // Load the panel from CSV
+                if (loadPanelFromCsvFile(szFile, g_panel)) {
+                    InvalidateRect(hwnd, NULL, TRUE);
+                    MessageBoxA(hwnd, "Panel CSV loaded successfully!", "WolfTrack", MB_OK | MB_ICONINFORMATION);
+                } else {
+                    MessageBoxA(hwnd, "Failed to load panel CSV. Please check the file format.", "Error", MB_OK | MB_ICONERROR);
+                }
+            }
             break;
-        case ID_BTN_OPEN_FOLDER:
-            MessageBoxA(hwnd, "Open Panel Folder clicked", "WolfTrack", MB_OK);
+        }
+        case ID_BTN_GENERATE_BARCODE: {
+            // Check if a panel is loaded
+            if (g_panel.panelID.empty()) {
+                MessageBoxA(hwnd, "No panel loaded. Please load a CSV first.", "WolfTrack", MB_OK | MB_ICONWARNING);
+                break;
+            }
+            
+            std::string artPath = createPanelArtSvg(g_panel);
+            std::string codePath = createPanelBarcodeSvgPlaceholder(g_panel);
+            
+            if (!artPath.empty() && !codePath.empty()) {
+                std::string msg = "Generated:\\n\\n" + artPath + "\\n\\n" + codePath;
+                MessageBoxA(hwnd, msg.c_str(), "WolfTrack - SVG Files Created", MB_OK | MB_ICONINFORMATION);
+            } else {
+                std::string msg = "Failed to generate SVG files.\\n";
+                if (artPath.empty()) msg += "Panel artwork failed.\\n";
+                if (codePath.empty()) msg += "DataMatrix label failed.";
+                MessageBoxA(hwnd, msg.c_str(), "Error", MB_OK | MB_ICONERROR);
+            }
             break;
-        case ID_BTN_MARK_LASERED:
-            MessageBoxA(hwnd, "Mark As Lasered clicked", "WolfTrack", MB_OK);
+        }
+        case ID_BTN_OPEN_FOLDER: {
+            // Check if a panel is loaded
+            if (g_panel.panelID.empty()) {
+                MessageBoxA(hwnd, "No panel loaded. Please load a CSV first.", "WolfTrack", MB_OK | MB_ICONWARNING);
+                break;
+            }
+            
+            std::string folder = getPanelPendingFolder(g_panel);
+            HINSTANCE result = ShellExecuteA(hwnd, "open", folder.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+            if ((INT_PTR)result <= 32) {
+                MessageBoxA(hwnd, "Failed to open folder", "Error", MB_OK | MB_ICONERROR);
+            }
             break;
+        }
+        case ID_BTN_VIEW_HISTORY: {
+            // Ensure the master CSV file exists before trying to open it
+            ensureMasterCsvExists();
+            
+            // Open the master CSV history file using absolute path
+            std::string histPath = getAbsolutePath("MasterData\\wolftrack_panels_master.csv");
+            HINSTANCE result = ShellExecuteA(hwnd, "open", histPath.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+            if ((INT_PTR)result <= 32) {
+                MessageBoxA(hwnd, "Failed to open history file. Make sure it exists.", "Error", MB_OK | MB_ICONERROR);
+            }
+            break;
+        }
         }
         return 0;
     }
@@ -56,6 +147,48 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         // Set text color to dark gray
         SetTextColor(hdc, RGB(40, 40, 40));
         
+        // Check if no panel is loaded
+        if (g_panel.panelID.empty()) {
+            HFONT hBigFont = CreateFont(24, 0, 0, 0, FW_BOLD, FALSE, FALSE, FALSE,
+                DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Segoe UI"));
+            SelectObject(hdc, hBigFont);
+            SetTextColor(hdc, RGB(100, 100, 100));
+            
+            std::string text = "No panel loaded";
+            TextOutA(hdc, 20, 100, text.c_str(), (int)text.length());
+            
+            SelectObject(hdc, hFont);
+            SetTextColor(hdc, RGB(120, 120, 120));
+            text = "Click 'Load Panel CSV' to begin";
+            TextOutA(hdc, 20, 140, text.c_str(), (int)text.length());
+            
+            // Draw footer with master statistics even when no panel loaded
+            MasterStats stats = computeMasterStats();
+            HFONT hFooterFont = CreateFont(14, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+                DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+                CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Segoe UI"));
+            SelectObject(hdc, hFooterFont);
+            SetTextColor(hdc, RGB(80, 80, 80));
+            
+            std::ostringstream footerText;
+            footerText << "Total Panels: " << stats.totalPanels 
+                       << "   Total PCBs: " << stats.totalPcbs;
+            if (!stats.lastPanelID.empty()) {
+                footerText << "   Last Panel: " << stats.lastPanelID;
+            }
+            
+            std::string footer = footerText.str();
+            TextOutA(hdc, 20, 540, footer.c_str(), (int)footer.length());
+            
+            DeleteObject(hFooterFont);
+            DeleteObject(hBigFont);
+            SelectObject(hdc, hOldFont);
+            DeleteObject(hFont);
+            EndPaint(hwnd, &ps);
+            return 0;
+        }
+        
         int y = 20;
         int lineHeight = 28;
         
@@ -66,6 +199,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         
         // Panel Number
         text = "Panel Number: " + g_panel.panelNumber;
+        TextOutA(hdc, 20, y, text.c_str(), (int)text.length());
+        y += lineHeight;
+        
+        // Operator
+        text = "Operator: " + g_currentOperator;
         TextOutA(hdc, 20, y, text.c_str(), (int)text.length());
         y += lineHeight;
         
@@ -115,6 +253,25 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         SelectObject(hdc, hOldPen);
         DeleteObject(hPen);
         
+        // Draw footer with master statistics
+        MasterStats stats = computeMasterStats();
+        HFONT hFooterFont = CreateFont(14, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+            DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+            CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Segoe UI"));
+        SelectObject(hdc, hFooterFont);
+        SetTextColor(hdc, RGB(80, 80, 80));
+        
+        std::ostringstream footerText;
+        footerText << "Total Panels: " << stats.totalPanels 
+                   << "   Total PCBs: " << stats.totalPcbs;
+        if (!stats.lastPanelID.empty()) {
+            footerText << "   Last Panel: " << stats.lastPanelID;
+        }
+        
+        std::string footer = footerText.str();
+        TextOutA(hdc, 20, 540, footer.c_str(), (int)footer.length());
+        
+        DeleteObject(hFooterFont);
         SelectObject(hdc, hOldFont);
         DeleteObject(hFont);
         EndPaint(hwnd, &ps);
@@ -149,14 +306,27 @@ void runPanelViewerGui(const Panel& panel) {
         return;
     }
 
+    // Calculate required client area size
+    // Grid: 6 cols * (120 width + 10 gap) = 780, plus 20 left margin + 20 right margin = 820
+    // Grid: 4 rows * (60 height + 10 gap) = 280, plus 250 top + 60 bottom margin + 50 button area = 640
+    int clientWidth = 820;
+    int clientHeight = 650;
+    
+    // Calculate window size including borders and title bar
+    RECT windowRect = {0, 0, clientWidth, clientHeight};
+    AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
+    
+    int windowWidth = windowRect.right - windowRect.left;
+    int windowHeight = windowRect.bottom - windowRect.top;
+    
     // Create the window
     HWND hwnd = CreateWindowEx(
         0,                                      // Extended styles
         TEXT("WolfTrackPanelViewerClass"),     // Class name
-        TEXT("WolfTrack Panel Viewer"),        // Window title
+        TEXT("AVO Invents Ltd – WolfTrack Panel Viewer"),  // Window title
         WS_OVERLAPPEDWINDOW,                   // Window style
         CW_USEDEFAULT, CW_USEDEFAULT,          // X, Y position
-        800, 600,                               // Width, Height
+        windowWidth, windowHeight,              // Width, Height (adjusted for borders)
         NULL,                                   // Parent window
         NULL,                                   // Menu
         hInstance,                              // Instance handle
@@ -169,11 +339,22 @@ void runPanelViewerGui(const Panel& panel) {
     }
 
     // Create button controls with modern styling
+    HWND btnLoadCsv = CreateWindowA(
+        "BUTTON",
+        "Load Panel CSV",
+        WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
+        30, 570, 150, 35,
+        hwnd,
+        (HMENU)ID_BTN_LOAD_CSV,
+        hInstance,
+        NULL
+    );
+    
     HWND btnBarcode = CreateWindowA(
         "BUTTON",
-        "Generate Barcode",
+        "Generate Laser Files",
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
-        30, 510, 200, 35,
+        190, 570, 160, 35,
         hwnd,
         (HMENU)ID_BTN_GENERATE_BARCODE,
         hInstance,
@@ -184,20 +365,20 @@ void runPanelViewerGui(const Panel& panel) {
         "BUTTON",
         "Open Panel Folder",
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
-        250, 510, 200, 35,
+        360, 570, 150, 35,
         hwnd,
         (HMENU)ID_BTN_OPEN_FOLDER,
         hInstance,
         NULL
     );
-
-    HWND btnLasered = CreateWindowA(
+    
+    HWND btnHistory = CreateWindowA(
         "BUTTON",
-        "Mark As Lasered",
+        "View History",
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_TEXT,
-        470, 510, 200, 35,
+        520, 570, 130, 35,
         hwnd,
-        (HMENU)ID_BTN_MARK_LASERED,
+        (HMENU)ID_BTN_VIEW_HISTORY,
         hInstance,
         NULL
     );
@@ -206,9 +387,10 @@ void runPanelViewerGui(const Panel& panel) {
     HFONT hButtonFont = CreateFont(16, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
         DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
         CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, TEXT("Segoe UI"));
+    SendMessage(btnLoadCsv, WM_SETFONT, (WPARAM)hButtonFont, TRUE);
     SendMessage(btnBarcode, WM_SETFONT, (WPARAM)hButtonFont, TRUE);
     SendMessage(btnFolder, WM_SETFONT, (WPARAM)hButtonFont, TRUE);
-    SendMessage(btnLasered, WM_SETFONT, (WPARAM)hButtonFont, TRUE);
+    SendMessage(btnHistory, WM_SETFONT, (WPARAM)hButtonFont, TRUE);
 
     // Show and update the window
     ShowWindow(hwnd, SW_SHOW);
