@@ -58,12 +58,6 @@ static void saveOperatorToSettings(const std::string& operatorName) {
 LRESULT CALLBACK OperatorDialogWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
     case WM_CREATE: {
-        // STAGE 1 UPGRADE: Load saved operator name if available
-        std::string savedOperator = loadOperatorFromSettings();
-        if (!savedOperator.empty()) {
-            strncpy_s(g_operatorNameBuffer, savedOperator.c_str(), 255);
-        }
-        
         // Create static text label
         HWND hLabel = CreateWindowExA(
             0,
@@ -77,11 +71,11 @@ LRESULT CALLBACK OperatorDialogWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
             NULL
         );
         
-        // Create the edit control
+        // Create the edit control (empty - user must type name each time)
         g_hEditOperatorName = CreateWindowExA(
             WS_EX_CLIENTEDGE,
             "EDIT",
-            g_operatorNameBuffer, // Pre-fill with saved name
+            "", // Empty text box - no auto-fill
             WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
             20, 50, 360, 30,
             hwnd,
