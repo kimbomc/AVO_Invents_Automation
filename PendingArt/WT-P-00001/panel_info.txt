@@ -1,0 +1,6 @@
+PanelID: WT-P-00001
+Operator: fedswfe
+CreatedAt: 2025-11-23 20:05:07
+TotalPanelsAtCreation: 9
+TotalPCBsAtCreation: 216
+SourceCSV: C:\Users\chris\Desktop\AVO_Invents_Automation\InputPanels\test_panel.csv

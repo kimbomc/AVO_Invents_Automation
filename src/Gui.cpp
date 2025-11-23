@@ -117,7 +117,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             std::string pendingRoot = getAbsolutePath(WolfTrackConfig::PENDING_ART_ROOT);
             fs::path panelFolder = fs::path(pendingRoot) / g_panel.panelID;
             
-            if (fs::exists(panelFolder)) {
+            if (fs::exists(panelFolder) && fs::is_directory(panelFolder)) {
                 int result = MessageBoxA(hwnd, 
                     "Panel folder already exists. This will overwrite existing files.\n\nDo you want to continue?",
                     "Duplicate Panel Warning", 
