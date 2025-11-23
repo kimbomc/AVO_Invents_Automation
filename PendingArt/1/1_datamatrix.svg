@@ -71,6 +71,6 @@
   <rect x="136" y="138" width="12" height="12" fill="black"/>
   <rect x="148" y="138" width="12" height="12" fill="black"/>
   <rect x="35" y="25" width="130" height="130" fill="none" stroke="black" stroke-width="2"/>
-  <text x="110" y="190" font-family="Arial" font-size="16" font-weight="bold" text-anchor="middle" fill="black">WT-P-00001</text>
-  <text x="110" y="215" font-family="Arial" font-size="14" text-anchor="middle" fill="black">Operator: fedswfe</text>
+  <text x="110" y="190" font-family="Arial" font-size="16" font-weight="bold" text-anchor="middle" fill="black">1</text>
+  <text x="110" y="215" font-family="Arial" font-size="14" text-anchor="middle" fill="black">Operator: hh</text>
 </svg>

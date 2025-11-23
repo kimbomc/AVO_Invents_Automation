@@ -1,0 +1,6 @@
+PanelID: 3
+Operator: ddd
+CreatedAt: 2025-11-23 22:57:26
+TotalPanelsAtCreation: 33
+TotalPCBsAtCreation: 792
+SourceCSV: C:\Users\chris\Desktop\AVO_Invents_Automation\InputPanels\test_panel - Copy.csv

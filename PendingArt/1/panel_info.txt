@@ -1,0 +1,6 @@
+PanelID: 1
+Operator: hh
+CreatedAt: 2025-11-23 22:16:43
+TotalPanelsAtCreation: 22
+TotalPCBsAtCreation: 528
+SourceCSV: C:\Users\chris\Desktop\AVO_Invents_Automation\InputPanels\test_panel.csv

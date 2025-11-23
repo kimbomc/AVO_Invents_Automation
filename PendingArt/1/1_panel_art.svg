@@ -2,9 +2,9 @@
 <svg width="800" height="550" xmlns="http://www.w3.org/2000/svg">
   <!-- AVO Invents Ltd - WolfTrack Panel Artwork -->
   <rect width="800" height="550" fill="white"/>
-  <text x="20" y="30" font-family="Arial" font-size="18" font-weight="bold" fill="black">Panel ID: WT-P-00001</text>
-  <text x="20" y="55" font-family="Arial" font-size="16" fill="black">Operator: christopher</text>
-  <text x="20" y="75" font-family="Arial" font-size="14" fill="gray">Panel Number: 1</text>
+  <text x="20" y="30" font-family="Arial" font-size="18" font-weight="bold" fill="black">Panel ID: 1</text>
+  <text x="20" y="55" font-family="Arial" font-size="16" fill="black">Operator: hh</text>
+  <text x="20" y="75" font-family="Arial" font-size="14" fill="gray">Created: 2025-11-23 22:16:43</text>
   <rect x="20" y="100" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
   <text x="25" y="118" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB1</text>
   <text x="25" y="138" font-family="Courier New" font-size="10" fill="black">ABC001</text>

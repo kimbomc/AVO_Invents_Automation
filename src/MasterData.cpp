@@ -288,9 +288,9 @@ bool loadPanelFromCsvFile(const std::string& csvPath, Panel& outPanel) {
             return false;
         }
 
-        // Fill the Panel object
-        outPanel.panelID = generateNextPanelID();
-        outPanel.panelNumber = fields[0];
+        // Fill the Panel object - Use Panel ID from CSV file
+        outPanel.panelID = fields[0];
+        outPanel.panelNumber = fields[0]; // Keep same for compatibility
         for (size_t i = 0; i < 24; ++i) {
             outPanel.pcbSerials[i] = fields[i + 1];
         }
