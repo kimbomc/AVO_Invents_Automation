@@ -233,13 +233,13 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         TextOutA(hdc, 20, y, text.c_str(), (int)text.length());
         y += lineHeight;
         
-        // Panel Number
-        text = "Panel Number: " + g_panel.panelNumber;
+        // Operator
+        text = "Operator: " + g_currentOperator;
         TextOutA(hdc, 20, y, text.c_str(), (int)text.length());
         y += lineHeight;
         
-        // Operator
-        text = "Operator: " + g_currentOperator;
+        // Created At
+        text = "Created: " + g_panel.createdAt;
         TextOutA(hdc, 20, y, text.c_str(), (int)text.length());
         y += lineHeight;
         

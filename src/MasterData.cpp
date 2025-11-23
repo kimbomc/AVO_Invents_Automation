@@ -52,7 +52,7 @@ void ensureMasterCsvExists() {
         std::ofstream out(masterCsvPath, std::ios::out | std::ios::binary);
         // Write UTF-8 BOM to help Excel recognize encoding
         out << "\xEF\xBB\xBF";
-        out << "PanelID,PanelNumber";
+        out << "PanelID";
         for (int i = 1; i <= 24; ++i) {
             out << ",PCB" << i;
         }
@@ -188,7 +188,7 @@ void appendPanelToMaster(const Panel& p) {
     }
 
     // Base fields - use Excel formula syntax ="value" to prevent leading zero removal
-    out << "=\"" << p.panelID << "\",=\"" << p.panelNumber << "\"";
+    out << "=\"" << p.panelID << "\"";
 
     // 24 PCB serials - use formula syntax to preserve leading zeros
     for (size_t i = 0; i < p.pcbSerials.size(); ++i) {
@@ -362,7 +362,7 @@ std::string createPanelArtSvg(const Panel& panel) {
         svg << "  <text x=\"20\" y=\"55\" font-family=\"Arial\" font-size=\"16\" "
             << "fill=\"black\">Operator: " << g_currentOperator << "</text>\n";
         svg << "  <text x=\"20\" y=\"75\" font-family=\"Arial\" font-size=\"14\" "
-            << "fill=\"gray\">Panel Number: " << panel.panelNumber << "</text>\n";
+            << "fill=\"gray\">Created: " << panel.createdAt << "</text>\n";
         
         // Draw 24 PCB slots in 6x4 grid
         for (int i = 0; i < 24; ++i) {
