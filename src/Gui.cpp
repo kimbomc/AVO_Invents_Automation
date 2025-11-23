@@ -114,7 +114,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             }
             
             // STAGE 1 UPGRADE: Check if panel folder already exists
-            std::string panelFolder = getPanelPendingFolder(g_panel);
+            std::string pendingRoot = getAbsolutePath(WolfTrackConfig::PENDING_ART_ROOT);
+            fs::path panelFolder = fs::path(pendingRoot) / g_panel.panelID;
+            
             if (fs::exists(panelFolder)) {
                 int result = MessageBoxA(hwnd, 
                     "Panel folder already exists. This will overwrite existing files.\n\nDo you want to continue?",
