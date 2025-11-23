@@ -3,7 +3,7 @@
   <!-- AVO Invents Ltd - WolfTrack Panel Artwork -->
   <rect width="800" height="550" fill="white"/>
   <text x="20" y="30" font-family="Arial" font-size="18" font-weight="bold" fill="black">Panel ID: WT-P-00001</text>
-  <text x="20" y="55" font-family="Arial" font-size="16" fill="black">Operator: tom</text>
+  <text x="20" y="55" font-family="Arial" font-size="16" fill="black">Operator: steve</text>
   <text x="20" y="75" font-family="Arial" font-size="14" fill="gray">Panel Number: 1</text>
   <rect x="20" y="100" width="120" height="60" fill="none" stroke="black" stroke-width="1.5"/>
   <text x="25" y="118" font-family="Arial" font-size="12" font-weight="bold" fill="black">PCB1</text>

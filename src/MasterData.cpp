@@ -405,6 +405,20 @@ std::string createPanelArtSvg(const Panel& panel) {
         svg << "</svg>\n";
         svg.close();
         
+        // STAGE 1 UPGRADE: Create panel_info.txt metadata file
+        fs::path infoPath = fs::path(folder) / "panel_info.txt";
+        std::ofstream infoFile(infoPath);
+        if (infoFile.is_open()) {
+            MasterStats stats = computeMasterStats();
+            infoFile << "PanelID: " << panel.panelID << "\n";
+            infoFile << "Operator: " << g_currentOperator << "\n";
+            infoFile << "CreatedAt: " << panel.createdAt << "\n";
+            infoFile << "TotalPanelsAtCreation: " << stats.totalPanels << "\n";
+            infoFile << "TotalPCBsAtCreation: " << stats.totalPcbs << "\n";
+            infoFile << "SourceCSV: " << panel.sourceFile << "\n";
+            infoFile.close();
+        }
+        
         return svgPath.string();
     } catch (...) {
         return "";

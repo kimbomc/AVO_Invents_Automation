@@ -1,12 +1,17 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <fstream>
+#include <filesystem>
 #include <windows.h>
 #include <commctrl.h>
 #include "Panel.h"
 #include "MasterData.h"
 #include "Gui.h"
 #include "SessionState.h"
+#include "Config.h"
+
+namespace fs = std::filesystem;
 
 // Force Windows subsystem to prevent console window
 #pragma comment(linker, "/SUBSYSTEM:WINDOWS")
@@ -17,10 +22,48 @@ static HWND g_hEditOperatorName = NULL;
 static HWND g_hDialogWindow = NULL;
 static bool g_dialogClosed = false;
 
+// STAGE 1 UPGRADE: Helper functions for operator persistence
+static std::string getExeDirectory() {
+    char buffer[MAX_PATH];
+    GetModuleFileNameA(NULL, buffer, MAX_PATH);
+    std::string exePath(buffer);
+    size_t pos = exePath.find_last_of("\\/");
+    return (pos != std::string::npos) ? exePath.substr(0, pos) : ".";
+}
+
+static std::string loadOperatorFromSettings() {
+    std::string settingsPath = getExeDirectory() + "\\settings.ini";
+    std::ifstream file(settingsPath);
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            if (line.find("operator=") == 0) {
+                return line.substr(9); // Skip "operator="
+            }
+        }
+    }
+    return "";
+}
+
+static void saveOperatorToSettings(const std::string& operatorName) {
+    std::string settingsPath = getExeDirectory() + "\\settings.ini";
+    std::ofstream file(settingsPath);
+    if (file.is_open()) {
+        file << "operator=" << operatorName << "\n";
+        file.close();
+    }
+}
+
 // Window procedure for the operator name dialog
 LRESULT CALLBACK OperatorDialogWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
     case WM_CREATE: {
+        // STAGE 1 UPGRADE: Load saved operator name if available
+        std::string savedOperator = loadOperatorFromSettings();
+        if (!savedOperator.empty()) {
+            strncpy_s(g_operatorNameBuffer, savedOperator.c_str(), 255);
+        }
+        
         // Create static text label
         HWND hLabel = CreateWindowExA(
             0,
@@ -38,7 +81,7 @@ LRESULT CALLBACK OperatorDialogWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, L
         g_hEditOperatorName = CreateWindowExA(
             WS_EX_CLIENTEDGE,
             "EDIT",
-            "",
+            g_operatorNameBuffer, // Pre-fill with saved name
             WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL,
             20, 50, 360, 30,
             hwnd,
@@ -153,11 +196,22 @@ void showOperatorNameDialog() {
     }
     
     g_currentOperator = std::string(g_operatorNameBuffer);
+    
+    // STAGE 1 UPGRADE: Save operator name to settings.ini
+    saveOperatorToSettings(g_currentOperator);
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     // Explicitly free any console that might have been allocated
     FreeConsole();
+    
+    // STAGE 1 UPGRADE: Ensure folder structure exists at startup
+    std::string exeDir = getExeDirectory();
+    fs::create_directories(fs::path(exeDir) / WolfTrackConfig::INPUT_PANELS_ROOT);
+    fs::create_directories(fs::path(exeDir) / WolfTrackConfig::INPUT_PANELS_ARCHIVE);
+    fs::create_directories(fs::path(exeDir) / WolfTrackConfig::PENDING_ART_ROOT);
+    fs::create_directories(fs::path(exeDir) / WolfTrackConfig::COMPLETED_ART_ROOT);
+    fs::create_directories(fs::path(exeDir) / "MasterData");
     
     // Show GUI dialog for operator name
     showOperatorNameDialog();

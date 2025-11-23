@@ -90,6 +90,42 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 break;
             }
             
+            // STAGE 1 UPGRADE: Validate operator name
+            if (g_currentOperator.empty()) {
+                MessageBoxA(hwnd, "Operator name is missing. Please restart the application.", "Validation Error", MB_OK | MB_ICONERROR);
+                break;
+            }
+            
+            // STAGE 1 UPGRADE: Validate all 24 PCB serials are non-empty
+            bool allPcbsValid = true;
+            std::string invalidPcbs = "";
+            for (size_t i = 0; i < g_panel.pcbSerials.size(); ++i) {
+                if (g_panel.pcbSerials[i].empty()) {
+                    allPcbsValid = false;
+                    if (!invalidPcbs.empty()) invalidPcbs += ", ";
+                    invalidPcbs += "PCB" + std::to_string(i + 1);
+                }
+            }
+            
+            if (!allPcbsValid) {
+                std::string msg = "Cannot generate laser files. The following PCB fields are empty:\n\n" + invalidPcbs + "\n\nPlease load a complete CSV file.";
+                MessageBoxA(hwnd, msg.c_str(), "Validation Error", MB_OK | MB_ICONERROR);
+                break;
+            }
+            
+            // STAGE 1 UPGRADE: Check if panel folder already exists
+            std::string panelFolder = getPanelPendingFolder(g_panel);
+            if (fs::exists(panelFolder)) {
+                int result = MessageBoxA(hwnd, 
+                    "Panel folder already exists. This will overwrite existing files.\n\nDo you want to continue?",
+                    "Duplicate Panel Warning", 
+                    MB_YESNO | MB_ICONWARNING);
+                
+                if (result == IDNO) {
+                    break; // User cancelled
+                }
+            }
+            
             std::string artPath = createPanelArtSvg(g_panel);
             std::string codePath = createPanelBarcodeSvgPlaceholder(g_panel);
             
